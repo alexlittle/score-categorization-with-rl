@@ -8,8 +8,6 @@ Adapted from: https://pytorch.org/tutorials/intermediate/reinforcement_q_learnin
 
 import time
 import random
-
-
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -41,14 +39,12 @@ class DQNAgent():
         self.episode_durations = []
         self.episode_rewards = []
 
-
     def select_action(self, state):
         if random.random() < self.epsilon:
             return torch.tensor([[self.simulator.action_space.sample()]], device=self.device, dtype=torch.long)
         else:
             with torch.no_grad():
                 return self.policy_net(state).max(1).indices.view(1, 1)
-
 
     def optimize_model(self, batch_size):
         if len(self.memory) < batch_size:
@@ -102,18 +98,14 @@ class DQNAgent():
                 else:
                     next_state = torch.tensor(observation, dtype=torch.float32, device=self.device).unsqueeze(0)
 
-
-                # Store the transition in memory
                 self.memory.push(state, action, next_state, reward)
 
-                # Move to the next state
                 state = next_state
 
                 # Perform one step of the optimization (on the policy network)
                 self.optimize_model(self.dqn_config['batch_size'])
 
                 # Soft update of the target network's weights
-                # θ′ ← τ θ + (1 −τ )θ′
                 target_net_state_dict = self.target_net.state_dict()
                 policy_net_state_dict = self.policy_net.state_dict()
                 for key in policy_net_state_dict:

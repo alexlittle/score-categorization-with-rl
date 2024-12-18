@@ -1,0 +1,22 @@
+{
+    "hidden_dims": 128,
+    "num_episodes": 100000,
+    "batch_size": 64,
+    "epsilon_fn": "linear",
+    "epsilon_lin_start": 1.0,
+    "epsilon_lin_end": 0.01,
+    "replaybuffer_capacity": 500000,
+    "gamma": 0.99,
+    "lr": 0.0001,
+    "tau": 0.005,
+    "data_file": "course_bbb_2013b.csv",
+    "grade_boundaries": 10,
+    "max_sequence_length": 11,
+    "num_categories": 6,
+    "simulator": "gym_environments.simulator_A_scores_only",
+    "epsilon_decay": 75000.0,
+    "average_reward": 2.97837,
+    "average_reward_last_half": 3.8546,
+    "average_reward_last_100": 3.85,
+    "elapsed_time": 2251.0369896888733
+}
