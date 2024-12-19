@@ -11,7 +11,7 @@ from datetime import datetime
 from tensorboardX import SummaryWriter
 
 from dqn_model.dqnagent import DQNAgent
-
+from gyms import helper
 
 DQN_CONFIG = {'hidden_dims': 128,
               'num_episodes': 10,
@@ -24,9 +24,10 @@ DQN_CONFIG = {'hidden_dims': 128,
               'lr': 1e-4,
               'tau': 0.005,
               'data_file': 'course_bbb_2013b.csv',
-              'grade_boundaries': 10,
               'max_sequence_length': 11,
-              'num_categories': 6}
+              'categories_range_start': 50,
+              'categories_range_end': 91,
+              'grade_boundaries': 10 }
 
 def main():
     parser = argparse.ArgumentParser()
@@ -66,10 +67,14 @@ def main():
                         type=int,
                         help="Max length of observation sequence",
                         default=DQN_CONFIG['max_sequence_length'])
-    parser.add_argument('--num_categories',
+    parser.add_argument('--categories_range_start',
                         type=int,
-                        help="number of score categories",
-                        default=DQN_CONFIG['num_categories'])
+                        help="Start of score category range",
+                        default=DQN_CONFIG['categories_range_start'])
+    parser.add_argument('--categories_range_end',
+                        type=int,
+                        help="End of score category range",
+                        default=DQN_CONFIG['categories_range_end'])
     args = parser.parse_args()
 
     # Update config based on any command line params provided
@@ -82,7 +87,12 @@ def main():
     DQN_CONFIG['epsilon_lin_end'] = args.epsilon_lin_end
     DQN_CONFIG['grade_boundaries'] = args.grade_boundaries
     DQN_CONFIG['max_sequence_length'] = args.max_sequence_length
-    DQN_CONFIG['num_categories'] = args.num_categories
+    DQN_CONFIG['categories_range_start'] = args.categories_range_start
+    DQN_CONFIG['categories_range_end'] = args.categories_range_end
+
+    DQN_CONFIG['num_categories'] = helper.num_score_categories(DQN_CONFIG['categories_range_start'],
+                                                               DQN_CONFIG['categories_range_end'],
+                                                               DQN_CONFIG['grade_boundaries'] )
 
     DQN_CONFIG['epsilon_decay'] = DQN_CONFIG['num_episodes'] * 3 / 4
 
@@ -145,10 +155,10 @@ def main():
     # save model state dict and config used
     ############################################
     dir_path = os.path.dirname(os.path.abspath(__file__))
-    model_output_file = os.path.join(dir_path, 'model_state_dicts', timestamp +".pth")
+    model_output_file = os.path.join(dir_path, 'output', timestamp +".pth")
     torch.save(agent.policy_net.state_dict(), model_output_file)
 
-    config_output_file = os.path.join(dir_path, 'model_state_dicts', timestamp + ".json")
+    config_output_file = os.path.join(dir_path, 'output', timestamp + ".json")
     with open(config_output_file, "w") as file:
         json.dump(DQN_CONFIG, file, indent=4)
 

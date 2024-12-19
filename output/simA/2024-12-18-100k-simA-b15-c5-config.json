@@ -11,6 +11,8 @@
     "tau": 0.005,
     "data_file": "course_bbb_2013b.csv",
     "grade_boundaries": 15,
+    "categories_range_start": 50,
+    "categories_range_end": 91,
     "max_sequence_length": 11,
     "num_categories": 5,
     "simulator": "gym_environments.simulator_A_scores_only",

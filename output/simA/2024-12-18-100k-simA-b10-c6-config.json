@@ -18,5 +18,7 @@
     "average_reward": 2.97837,
     "average_reward_last_half": 3.8546,
     "average_reward_last_100": 3.85,
-    "elapsed_time": 2251.0369896888733
+    "elapsed_time": 2251.0369896888733,
+    "categories_range_start": 50,
+    "categories_range_end": 91
 }
