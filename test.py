@@ -88,6 +88,10 @@ def main():
     num_close_correct = 0
     num_close_incorrect = 0
 
+    # CSV writer for retaining all results
+
+
+
     # loop through users until no more activity
     for user in all_users:
         current_user_data = activity.loc[activity['id_student'] == user].sort_values(by='date_submitted')
