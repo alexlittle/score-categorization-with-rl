@@ -88,8 +88,8 @@ def main():
     num_close_correct = 0
     num_close_incorrect = 0
 
-    # CSV writer for retaining all results
-
+    # retaining all results
+    results = []
 
 
     # loop through users until no more activity
@@ -106,7 +106,7 @@ def main():
         #    second_activities = 0
         # learner_sequence = [first_activities, first_score, second_activities]
         learner_sequence = [first_score]
-        for i in range(2, config['max_sequence_length']):
+        for i in range(2, config['max_sequence_length']+1):
             normalised_sequence = simulator.normalise_sequence(learner_sequence,
                                                                config['max_sequence_length'],
                                                                config['num_categories'])
@@ -118,6 +118,8 @@ def main():
 
             predicted_next_score = get_predicted_next_score(model, normalised_sequence)
             print(predicted_next_score-1)
+
+            results.append([user, i, actual_next_score_category, predicted_next_score-1, abs(actual_next_score_category - (predicted_next_score-1))])
 
             if actual_next_score_category == -1:
                 if predicted_next_score == 0:
@@ -141,7 +143,10 @@ def main():
             else:
                 num_close_incorrect += 1
 
-    expected_from_random = 100/5
+    results_df = pd.DataFrame(results, columns=["user_id", "assessment_no", "actual_category", "predicted_category", "difference"])
+    print(results_df.head(20))
+
+    expected_from_random = 100/(config['num_categories']+1)
     actual_exact = num_exact_correct*100 / (num_exact_correct+num_exact_incorrect)
     actual_close = num_close_correct * 100 / (num_close_correct + num_close_incorrect)
     print(f"random {expected_from_random:.2f}, actual exact: {actual_exact:.2f}, actual close {actual_close:.2f}")

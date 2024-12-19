@@ -92,11 +92,7 @@ class DQNAgent():
                 total_reward += reward
                 reward = torch.tensor([reward], device=self.device)
 
-                if done:
-                    print(state)
-                    next_state = None
-                else:
-                    next_state = torch.tensor(observation, dtype=torch.float32, device=self.device).unsqueeze(0)
+                next_state = torch.tensor(observation, dtype=torch.float32, device=self.device).unsqueeze(0)
 
                 self.memory.push(state, action, next_state, reward)
 
@@ -115,6 +111,7 @@ class DQNAgent():
                 self.target_net.load_state_dict(target_net_state_dict)
 
                 if done:
+                    print(state)
                     self.episode_durations.append(t + 1)
                     self.episode_rewards.append(total_reward)
                     break

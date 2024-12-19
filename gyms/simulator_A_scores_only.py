@@ -12,7 +12,7 @@ def normalise_sequence(learner_sequence, max_sequence_length, num_categories):
     padded_arr = learner_sequence + [-1] * (max_sequence_length - len(learner_sequence))
     for idx, x in enumerate(padded_arr):
         if x != -1:
-            padded_arr[idx] = x / num_categories
+            padded_arr[idx] = x / (num_categories - 1)
     return padded_arr
 
 class LearningPredictorEnv(gymnasium.Env):
@@ -21,10 +21,7 @@ class LearningPredictorEnv(gymnasium.Env):
         super(LearningPredictorEnv, self).__init__()
 
         self.config = config
-        activity = pd.read_csv(data_file_path)
-
-        # filter for only one courses assessments
-        self.all_activity = activity
+        self.all_activity = pd.read_csv(data_file_path)
         self.all_users = self.all_activity['id_student'].unique()
         self.max_sequence_length = self.config['max_sequence_length']
         self.grade_boundaries = self.config['grade_boundaries']
@@ -39,6 +36,8 @@ class LearningPredictorEnv(gymnasium.Env):
 
     def reset(self):
         self.current_user_data_index = 0
+        #self.current_user_id = 2569163 - user with all 11 assessments completed
+        # expected: 81, 81, 100, 83, 100, 87, 80, 83, 100, 89, 80
         self.current_user_id = random.choice(self.all_users)
         self.current_user_data = self.all_activity.loc[self.all_activity['id_student'] == self.current_user_id].sort_values(by='date_submitted')
 
@@ -63,7 +62,7 @@ class LearningPredictorEnv(gymnasium.Env):
 
         reward = 1 if action-1 == true_next_score_category else 0
         # 5. Check for episode termination (adjust as needed)
-        done = len(self.learner_sequence) > self.max_sequence_length
+        done = len(self.learner_sequence) >= self.max_sequence_length
 
         return self._get_observation(), reward, done, {}
 

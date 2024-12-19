@@ -23,7 +23,7 @@ DQN_CONFIG = {'hidden_dims': 128,
               'gamma': 0.99,
               'lr': 1e-4,
               'tau': 0.005,
-              'data_file': 'course_bbb_2013b.csv',
+              'data_file': 'course_bbb_2013b-train.csv',
               'max_sequence_length': 11,
               'categories_range_start': 50,
               'categories_range_end': 91,
@@ -109,10 +109,7 @@ def main():
         return
 
     # init Simulator Environment
-    env = simulator.LearningPredictorEnv(data_file_path,
-                                         max_sequence_length=DQN_CONFIG['max_sequence_length'],
-                                         grade_boundaries=DQN_CONFIG['grade_boundaries'],
-                                         num_categories=DQN_CONFIG['num_categories'])
+    env = simulator.LearningPredictorEnv(data_file_path, DQN_CONFIG)
 
     start_time = time.time()
 
