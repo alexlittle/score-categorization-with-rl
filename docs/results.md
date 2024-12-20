@@ -11,3 +11,12 @@
 | DQN   | Sim B     | 100k        | dqn-simB-100k    | train   |                                                   |
 | DQN   | Sim B     | 100k        | dqn-simB-100k    | test1   |                                                   |
 | DQN   | Sim B     | 100k        | dqn-simB-100k    | test2   |                                                   |
+| DQN   | Sim C     | 100k        | dqn-simC-100k    | train   |                                                   |
+| DQN   | Sim C     | 100k        | dqn-simC-100k    | test1   |                                                   |
+| DQN   | Sim C     | 100k        | dqn-simC-100k    | test2   |                                                   |
+| DQN   | Sim C     | 250k        | dqn-simC-250k    | train   |                                                   |
+| DQN   | Sim C     | 250k        | dqn-simC-250k    | test1   |                                                   |
+| DQN   | Sim C     | 250k        | dqn-simC-250k    | test2   |                                                   |
+| DQN   | Sim D     | 100k        | dqn-simD-100k    | train   |                                                   |
+| DQN   | Sim D     | 100k        | dqn-simD-100k    | test1   |                                                   |
+| DQN   | Sim D     | 100k        | dqn-simD-100k    | test2   |                                                   |
