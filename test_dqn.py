@@ -5,6 +5,10 @@ import pandas as pd
 import argparse
 import importlib
 
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.metrics import confusion_matrix
+
 from dqn_model.dqn import DQN
 from gyms import helper
 
@@ -51,22 +55,26 @@ def main():
                         required=True)
     args = parser.parse_args()
 
-    # set up paths to input files
-    dir_path = os.path.dirname(os.path.abspath(__file__))
-    data_file_path = os.path.join(dir_path, 'data', args.data_file)
-    state_dict_path = os.path.join(dir_path, 'output', args.model + "-model.pth")
-    config_path = os.path.join(dir_path, 'output', args.model + "-config.json")
 
-    # load config
-    with open(config_path) as f:
-        config = json.load(f)
-
-    # set up environment
     try:
         simulator = importlib.import_module(args.simulator)
     except ModuleNotFoundError:
         print(f"Error: The simulator '{args.simulator}' could not be found.")
         return
+
+    simulator_name = simulator.LearningPredictorEnv.__module__.split('.')[1]
+
+
+    # set up paths to input files
+    dir_path = os.path.dirname(os.path.abspath(__file__))
+    data_file_path = os.path.join(dir_path, 'data', args.data_file)
+    state_dict_path = os.path.join(dir_path, 'output', 'dqn', simulator_name, args.model + "-model.pth")
+    config_path = os.path.join(dir_path, 'output', 'dqn', simulator_name, args.model + "-config.json")
+    results_dir = os.path.join(dir_path, 'output', 'dqn', simulator_name, "results")
+
+    # load config
+    with open(config_path) as f:
+        config = json.load(f)
 
     # only used here to get access to the normalise_sequence method
     env = simulator.LearningPredictorEnv(data_file_path, config)
@@ -144,14 +152,45 @@ def main():
 
     results_df = pd.DataFrame(results, columns=["user_id", "assessment_no", "actual_category", "predicted_category", "abs_difference"])
 
-    results_df.to_csv()
+    # save the whole results to csv
+    results_df.to_csv(os.path.join(results_dir, "actual_v_predicted.csv"), index=False)
 
+    # create a confusion matrix of the results
+    labels = sorted(results_df["actual_category"].unique())  # Ensure labels are sorted
+    cm = confusion_matrix(results_df["actual_category"], results_df["predicted_category"], labels=labels)
+
+    # Create a heatmap
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=labels, yticklabels=labels)
+    plt.xlabel("Predicted Category")
+    plt.ylabel("Actual Category")
+    plt.title("Confusion Matrix")
+    plt.savefig(os.path.join(results_dir, "confusion_matrix.png"), dpi=300, bbox_inches="tight")
+
+    # generate and save overall results
     expected_from_random = 100/(config['num_categories']+1)
     actual_exact = num_exact_correct*100 / (num_exact_correct+num_exact_incorrect)
     actual_close = num_close_correct * 100 / (num_close_correct + num_close_incorrect)
+
+    overall_results = {
+            'expected_from_random': expected_from_random,
+            'num_exact_correct': num_exact_correct,
+            'num_exact_incorrect': num_exact_incorrect,
+            'exact_percent': actual_exact,
+            'num_close_correct': num_close_correct,
+            'num_close_incorrect': num_close_incorrect,
+            'close_percent': actual_close
+    }
+
+    results_output_file = os.path.join(results_dir, 'overall.json')
+    with open(results_output_file, "w") as file:
+        json.dump(overall_results, file, indent=4)
+
+
     print(f"random {expected_from_random:.2f}, actual exact: {actual_exact:.2f}, actual close {actual_close:.2f}")
     print(f"Exactly num correct {num_exact_correct}, num incorrect: {num_exact_incorrect}")
     print(f"Close(+/-1) num correct {num_close_correct}, num incorrect: {num_close_incorrect}")
+
 
 if __name__ == "__main__":
     main()
