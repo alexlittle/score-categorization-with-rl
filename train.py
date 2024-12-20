@@ -24,7 +24,6 @@ DQN_CONFIG = {'hidden_dims': 128,
               'lr': 1e-4,
               'tau': 0.005,
               'data_file': 'course_bbb_2013b-train.csv',
-              'max_sequence_length': 11,
               'categories_range_start': 50,
               'categories_range_end': 91,
               'grade_boundaries': 10 }
@@ -63,10 +62,6 @@ def main():
                         type=int,
                         help="Grade boundary step, eg, with 15, boundaries will be 50,65,80",
                         default=DQN_CONFIG['grade_boundaries'])
-    parser.add_argument('--max_sequence_length',
-                        type=int,
-                        help="Max length of observation sequence",
-                        default=DQN_CONFIG['max_sequence_length'])
     parser.add_argument('--categories_range_start',
                         type=int,
                         help="Start of score category range",
@@ -86,7 +81,6 @@ def main():
     DQN_CONFIG['epsilon_lin_start'] = args.epsilon_lin_start
     DQN_CONFIG['epsilon_lin_end'] = args.epsilon_lin_end
     DQN_CONFIG['grade_boundaries'] = args.grade_boundaries
-    DQN_CONFIG['max_sequence_length'] = args.max_sequence_length
     DQN_CONFIG['categories_range_start'] = args.categories_range_start
     DQN_CONFIG['categories_range_end'] = args.categories_range_end
 
@@ -110,7 +104,7 @@ def main():
 
     # init Simulator Environment
     env = simulator.LearningPredictorEnv(data_file_path, DQN_CONFIG)
-
+    DQN_CONFIG['max_sequence_length'] = env.max_sequence_length
     start_time = time.time()
 
     timestamp = datetime.now().strftime('%Y-%m-%d-%H_%M_%S')

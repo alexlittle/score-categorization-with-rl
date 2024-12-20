@@ -72,7 +72,7 @@ def main():
     env = simulator.LearningPredictorEnv(data_file_path, config)
 
     # load model and DQN
-    model = DQN(input_size=config['max_sequence_length'],
+    model = DQN(input_size=env.max_sequence_length,
                      hidden_dims=config['hidden_dims'],
                      output_size=config['num_categories']+1)
     model.load_state_dict(torch.load(state_dict_path, weights_only=False))
@@ -106,20 +106,15 @@ def main():
         #    second_activities = 0
         # learner_sequence = [first_activities, first_score, second_activities]
         learner_sequence = [first_score]
-        for i in range(2, config['max_sequence_length']+1):
-            normalised_sequence = simulator.normalise_sequence(learner_sequence,
-                                                               config['max_sequence_length'],
-                                                               config['num_categories'])
-            print(normalised_sequence)
+        for i in range(1, env.max_sequence_length):
+            env.learner_sequence = learner_sequence
+            normalised_sequence = env.get_observation()
 
             # check if suggested action matches the actual one
             actual_next_score_category = get_true_next_score(config, i, current_user_data)
-            print(actual_next_score_category)
-
             predicted_next_score = get_predicted_next_score(model, normalised_sequence)
-            print(predicted_next_score-1)
 
-            results.append([user, i, actual_next_score_category, predicted_next_score-1, abs(actual_next_score_category - (predicted_next_score-1))])
+            results.append([user, i+1, actual_next_score_category, predicted_next_score-1, abs(actual_next_score_category - (predicted_next_score-1))])
 
             if actual_next_score_category == -1:
                 if predicted_next_score == 0:
@@ -134,6 +129,7 @@ def main():
 
             learner_sequence.append(actual_next_score_category)
 
+
             if actual_next_score_category == predicted_next_score-1:
                 num_exact_correct += 1
             else:
@@ -143,8 +139,12 @@ def main():
             else:
                 num_close_incorrect += 1
 
-    results_df = pd.DataFrame(results, columns=["user_id", "assessment_no", "actual_category", "predicted_category", "difference"])
-    print(results_df.head(20))
+        # output final sequence
+        print(learner_sequence)
+
+    results_df = pd.DataFrame(results, columns=["user_id", "assessment_no", "actual_category", "predicted_category", "abs_difference"])
+
+    results_df.to_csv()
 
     expected_from_random = 100/(config['num_categories']+1)
     actual_exact = num_exact_correct*100 / (num_exact_correct+num_exact_incorrect)

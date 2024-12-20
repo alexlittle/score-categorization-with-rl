@@ -29,10 +29,10 @@ class DQNAgent():
                         "mps" if torch.backends.mps.is_available() else
                         "cpu"
                     )
-        n_actions = self.simulator.action_space.n
-        n_observations = len(self.simulator.reset())
-        self.policy_net = DQN(n_observations, self.dqn_config['hidden_dims'], n_actions).to(self.device)
-        self.target_net = DQN(n_observations, self.dqn_config['hidden_dims'], n_actions).to(self.device)
+        self.n_actions = self.simulator.action_space.n
+        self.n_observations = len(self.simulator.reset())
+        self.policy_net = DQN(self.n_observations, self.dqn_config['hidden_dims'], self.n_actions).to(self.device)
+        self.target_net = DQN(self.n_observations, self.dqn_config['hidden_dims'], self.n_actions).to(self.device)
         self.target_net.load_state_dict(self.policy_net.state_dict())
         self.optimizer = optim.AdamW(self.policy_net.parameters(), lr=self.dqn_config['lr'], amsgrad=True)
         self.epsilon = self.dqn_config['epsilon_lin_start']
@@ -92,9 +92,10 @@ class DQNAgent():
                 total_reward += reward
                 reward = torch.tensor([reward], device=self.device)
 
-                next_state = torch.tensor(observation, dtype=torch.float32, device=self.device).unsqueeze(0)
 
-                self.memory.push(state, action, next_state, reward)
+                next_state = torch.tensor(observation, dtype=torch.float32, device=self.device).unsqueeze(0)
+                if len(observation) == self.n_observations:
+                    self.memory.push(state, action, next_state, reward)
 
                 state = next_state
 
@@ -122,7 +123,7 @@ class DQNAgent():
             self.writer.add_scalar('Episode Epsilon', self.epsilon, episode)
             self.writer.add_scalar('Episode Time', ep_time, episode)
 
-            print(f"Episode {episode}/{self.dqn_config['num_episodes']}, Duration {self.episode_durations[-1]}, "
+            print(f"Episode {episode+1}/{self.dqn_config['num_episodes']}, Duration {self.episode_durations[-1]}, "
                 f"Total Reward: {total_reward:.2f}, Epsilon: {self.epsilon:.2f}, Time: {ep_time:.2f}")
             self.epsilon = max(self.dqn_config['epsilon_lin_end'],
                           self.epsilon - (self.dqn_config['epsilon_lin_start']
