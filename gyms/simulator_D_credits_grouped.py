@@ -36,8 +36,6 @@ class LearningPredictorEnv(gymnasium.Env):
         self.current_user_id = random.choice(self.all_users)
         self.current_user_data = self.all_activity.loc[self.all_activity['id_student'] == self.current_user_id].sort_values(by='date_submitted')
         self.learner_demographics = self.init_demographics()
-        # add no activities before first assessment
-        first_activities = self.current_user_data.iloc[self.current_user_data_index].total_vle_before_assessment
 
         # add first assessment score
         first_score = helper.categorize_score(self.current_user_data.iloc[self.current_user_data_index].score,
@@ -59,11 +57,11 @@ class LearningPredictorEnv(gymnasium.Env):
         else:
             self.learner_sequence.append(true_next_score_category)
 
-
         reward = 1 if action-1 == true_next_score_category else 0
 
         observation = self.get_observation()
-        done = len(observation) >= self.max_sequence_length
+
+        done = len(observation) > self.max_sequence_length
 
         return observation, reward, done, {}
 
@@ -83,7 +81,6 @@ class LearningPredictorEnv(gymnasium.Env):
                                                  step = self.config['grade_boundaries'])
         except IndexError:
             next_score = -1
-
         return next_score
 
     def init_demographics(self):

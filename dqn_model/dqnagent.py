@@ -94,8 +94,11 @@ class DQNAgent():
 
 
                 next_state = torch.tensor(observation, dtype=torch.float32, device=self.device).unsqueeze(0)
-                if len(observation) == self.n_observations:
-                    self.memory.push(state, action, next_state, reward)
+                #if len(observation) == self.n_observations:
+                #    print("added")
+                self.memory.push(state, action, next_state, reward)
+                #else:
+                #print("not added")
 
                 state = next_state
 

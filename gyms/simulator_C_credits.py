@@ -63,7 +63,7 @@ class LearningPredictorEnv(gymnasium.Env):
         reward = 1 if action-1 == true_next_score_category else 0
 
         observation = self.get_observation()
-        done = len(observation) >= self.max_sequence_length
+        done = len(self.learner_sequence ) >= 11
 
         return observation, reward, done, {}
 
