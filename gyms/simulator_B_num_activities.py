@@ -56,9 +56,10 @@ class LearningPredictorEnv(gymnasium.Env):
                 return self.get_observation(), 1, True, {}
             else:
                 return self.get_observation(), 0, True, {}
-        else:
 
-            self.learner_sequence.append(true_next_score_category)
+        self.learner_sequence.append(true_next_score_category)
+        # only add activities if not at the final score
+        if len(self.learner_sequence) < self.max_sequence_length:
             self.learner_sequence.append(next_activities)
 
         reward = 1 if action-1 == true_next_score_category else 0

@@ -5,8 +5,8 @@
 
 Filtered version of OULAD studentassessment to only the 2013b presentation of the course.
 
-* Num of students:
-* Total num rows:
+* Num of students: 1369
+* Total num rows: 11256
 
 Include the total number of distinct activities from the studentvle table that the student prior to the date of the
 assessment. 
