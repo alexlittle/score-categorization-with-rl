@@ -76,7 +76,7 @@ class LearningPredictorEnv(gymnasium.Env):
                 else:
                     padded_arr[idx] = x /320
             elif x != -1:
-                padded_arr[idx] = x / self.num_categories
+                padded_arr[idx] = x / (self.num_categories -1)
         return padded_arr
 
     def _get_true_next_score(self):

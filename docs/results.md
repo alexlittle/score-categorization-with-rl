@@ -11,9 +11,9 @@
 | DQN   | Sim B     | 100k        | dqn-simB-100k    | train   |                                                   |
 | DQN   | Sim B     | 100k        | dqn-simB-100k    | test1   |                                                   |
 | DQN   | Sim B     | 100k        | dqn-simB-100k    | test2   |                                                   |
-| DQN   | Sim C     | 100k        | dqn-simC-100k    | train   |                                                   |
-| DQN   | Sim C     | 100k        | dqn-simC-100k    | test1   |                                                   |
-| DQN   | Sim C     | 100k        | dqn-simC-100k    | test2   |                                                   |
+| DQN   | Sim C     | 100k        | dqn-simC-100k    | train   | output/dqn/simulator_C_credits/results/train/     |
+| DQN   | Sim C     | 100k        | dqn-simC-100k    | test1   | output/dqn/simulator_C_credits/results/test1/     |
+| DQN   | Sim C     | 100k        | dqn-simC-100k    | test2   | output/dqn/simulator_C_credits/results/test2/     |
 | DQN   | Sim C     | 250k        | dqn-simC-250k    | train   |                                                   |
 | DQN   | Sim C     | 250k        | dqn-simC-250k    | test1   |                                                   |
 | DQN   | Sim C     | 250k        | dqn-simC-250k    | test2   |                                                   |

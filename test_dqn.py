@@ -103,17 +103,20 @@ def main():
     # loop through users until no more activity
     for user in all_users:
         current_user_data = activity.loc[activity['id_student'] == user].sort_values(by='date_submitted')
-        #first_activities = current_user_data.iloc[0].total_vle_before_assessment
+
+        #env.current_user_id = user
+        #env.learner_demographics = env.init_demographics()
+        first_activities = current_user_data.iloc[0].total_vle_before_assessment
         first_score = helper.categorize_score(current_user_data.iloc[0].score,
                                               config['categories_range_start'],
                                               config['categories_range_end'],
                                               config['grade_boundaries'])
-        #try:
-        #    second_activities = current_user_data.iloc[1].total_vle_before_assessment
-        #except IndexError:
-        #    second_activities = 0
-        # learner_sequence = [first_activities, first_score, second_activities]
-        learner_sequence = [first_score]
+        try:
+           second_activities = current_user_data.iloc[1].total_vle_before_assessment
+        except IndexError:
+            second_activities = 0
+        learner_sequence = [first_activities, first_score, second_activities]
+        #learner_sequence = [first_score]
         for i in range(1, env.max_sequence_length):
             env.learner_sequence = learner_sequence
             normalised_sequence = env.get_observation()
@@ -173,6 +176,9 @@ def main():
     actual_close = num_close_correct * 100 / (num_close_correct + num_close_incorrect)
 
     overall_results = {
+            'model': args.model,
+            'simulator': args.simulator,
+            'data_file': args.data_file,
             'expected_from_random': expected_from_random,
             'num_exact_correct': num_exact_correct,
             'num_exact_incorrect': num_exact_incorrect,

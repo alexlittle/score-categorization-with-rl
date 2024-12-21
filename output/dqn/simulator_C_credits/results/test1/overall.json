@@ -1,0 +1,9 @@
+{
+    "expected_from_random": 14.285714285714286,
+    "num_exact_correct": 5387,
+    "num_exact_incorrect": 8988,
+    "exact_percent": 37.474782608695655,
+    "num_close_correct": 9353,
+    "num_close_incorrect": 5022,
+    "close_percent": 65.06434782608696
+}
